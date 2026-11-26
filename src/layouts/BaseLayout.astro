@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import { layoutText, localizedPath, navigation, withTrailingSlash, type Locale } from '../i18n/navigation';
+
+interface Props {
+	locale: Locale;
+	title: string;
+	description?: string;
+	/** Published equivalent path for pages outside the main navigation. Use null if unavailable. */
+	alternatePath?: string | null;
+}
+
+const { locale, title, description, alternatePath } = Astro.props;
+const text = layoutText[locale];
+const otherLocale = locale === 'fr' ? 'en' : 'fr';
+const pathname = withTrailingSlash(Astro.url.pathname);
+const section = navigation.find((item) => localizedPath(locale, item[locale].slug) === pathname);
+const equivalentPath = alternatePath === undefined && section
+	? localizedPath(otherLocale, section[otherLocale].slug)
+	: alternatePath ?? undefined;
+---
+
+<!doctype html>
+<html lang={locale}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preload" href="/fonts/PlusJakartaSans-Latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+		<title>{title} | {text.siteName}</title>
+		{description && <meta name="description" content={description} />}
+		{equivalentPath && <link rel="alternate" hreflang={otherLocale} href={equivalentPath} />}
+	</head>
+	<body class="flex min-h-screen flex-col">
+		<a href="#main-content" class="sr-only z-10 rounded-panel border border-primary bg-surface px-4 py-3 font-semibold text-primary focus:not-sr-only focus:absolute focus:inset-s-3 focus:top-3">
+			{text.skipLink}
+		</a>
+		<Header locale={locale} alternatePath={equivalentPath} />
+		<main id="main-content" tabindex="-1" class="min-w-0 grow">
+			<slot />
+		</main>
+		<Footer locale={locale} />
+	</body>
+</html>

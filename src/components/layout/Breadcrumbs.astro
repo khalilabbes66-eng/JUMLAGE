@@ -1,0 +1,21 @@
+---
+interface Props {
+	label: string;
+	ancestors: ReadonlyArray<{ label: string; href: string }>;
+	current: string;
+}
+
+const { label, ancestors, current } = Astro.props;
+---
+
+<nav aria-label={label}>
+	<ol class="flex flex-wrap items-center gap-x-3 text-sm" role="list">
+		{ancestors.map((item) => (
+			<li class="inline-flex items-center gap-3">
+				<a href={item.href} class="tap-target interactive-color inline-flex items-center font-bold text-primary underline underline-offset-4 hover:bg-surface hover:decoration-2">{item.label}</a>
+				<span aria-hidden="true" class="text-muted">/</span>
+			</li>
+		))}
+		<li aria-current="page" class="font-semibold text-muted">{current}</li>
+	</ol>
+</nav>

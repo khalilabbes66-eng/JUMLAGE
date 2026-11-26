@@ -1,0 +1,18 @@
+---
+import type { Locale } from '../../i18n/navigation';
+import { relatedEntries } from '../../lib/institutional';
+import type { Activity } from '../../types/institutional';
+import RelatedEntries from './RelatedEntries.astro';
+
+interface Props { locale: Locale; activity: Activity }
+const { locale, activity } = Astro.props;
+const related = relatedEntries(locale, { activity: activity.id, articleIds: activity.relatedArticleIds, resourceIds: activity.relatedResourceIds });
+---
+
+<li id={'activity-' + activity.id} tabindex="-1" class="min-w-0 scroll-mt-4 border-b border-divider py-4">
+	<h3 class="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-3 text-lg font-extrabold text-primary">
+		<span class="editorial-label text-muted tabular-nums">{activity.id}</span>
+		<span class="wrap-anywhere">{activity.title[locale]}</span>
+	</h3>
+	<RelatedEntries {locale} {...related} />
+</li>

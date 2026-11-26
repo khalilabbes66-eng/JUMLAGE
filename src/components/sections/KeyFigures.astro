@@ -1,0 +1,23 @@
+---
+import Section from '../ui/Section.astro';
+
+interface Props {
+	heading: string;
+	figures: ReadonlyArray<{ value: number; label: string; detail?: string }>;
+}
+
+const { heading, figures } = Astro.props;
+---
+
+<Section aria-labelledby="key-figures-title" class="border-t-2 border-accent bg-primary text-surface">
+	<h2 id="key-figures-title" class="text-heading font-extrabold tracking-tight">{heading}</h2>
+	<ul class="mt-block grid grid-cols-2 gap-x-grid gap-y-block md:grid-cols-4" role="list">
+		{figures.map(({ value, label, detail }) => (
+			<li class="min-w-0 border-t border-surface/35 pt-4">
+				<strong class="block text-page font-extrabold tabular-nums">{value}</strong>
+				<span class="mt-2 block text-body font-bold wrap-anywhere">{label}</span>
+				{detail && <span class="mt-1 block text-sm text-surface/90">{detail}</span>}
+			</li>
+		))}
+	</ul>
+</Section>

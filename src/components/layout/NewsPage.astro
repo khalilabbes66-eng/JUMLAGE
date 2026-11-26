@@ -1,0 +1,32 @@
+---
+import { programme } from '../../content/institutional';
+import { articleCategories, institutionalText } from '../../i18n/institutional';
+import { newsAndEvents, type Locale } from '../../i18n/navigation';
+import { publicArticles } from '../../lib/institutional';
+import ArticleCard from '../sections/ArticleCard.astro';
+import FilterCatalogue from '../ui/FilterCatalogue.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const articles = publicArticles(locale);
+const years = [...new Set(articles.map((item) => (item.eventDate || item.publicationDate).slice(0, 4)))].sort().reverse();
+const fields = [
+	{ name: 'year', label: text.year, options: years.map((value) => ({ value, label: value })) },
+	{ name: 'workpackage', label: text.workPackage, options: programme.map((item) => ({ value: item.id, label: item.code + ' — ' + item.title[locale] })) },
+	{ name: 'category', label: text.category, options: Object.entries(articleCategories[locale]).map(([value, label]) => ({ value, label })) },
+];
+---
+
+<InstitutionalPage {locale} title={newsAndEvents[locale].label} description={text.newsIntro}>
+	<FilterCatalogue {locale} id="news-results" {fields} itemCount={articles.length} emptyMessage={text.newsEmpty} pageSize={9}>
+		<ul class="grid gap-grid md:grid-cols-2 xl:grid-cols-3" role="list">
+			{articles.map((article) => (
+				<li data-catalogue-entry data-year={(article.eventDate || article.publicationDate).slice(0, 4)} data-workpackage={article.workPackage} data-category={article.category} class="min-w-0">
+					<ArticleCard {article} />
+				</li>
+			))}
+		</ul>
+	</FilterCatalogue>
+</InstitutionalPage>

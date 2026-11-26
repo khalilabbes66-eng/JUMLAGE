@@ -1,0 +1,40 @@
+---
+import { home, layoutText, localizedPath, type Locale } from '../../i18n/navigation';
+import { institutionalText } from '../../i18n/institutional';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../ui/Container.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import InternalPageHero from './InternalPageHero.astro';
+import PageContents from './PageContents.astro';
+
+interface Props {
+	locale: Locale;
+	title: string;
+	description: string;
+	alternatePath?: string | null;
+	ancestors?: readonly { label: string; href: string }[];
+	contents?: readonly { id: string; heading: string }[];
+}
+
+const { locale, title, description, alternatePath, ancestors = [], contents } = Astro.props;
+const text = institutionalText[locale];
+const breadcrumbs = [{ label: home[locale].label, href: localizedPath(locale) }, ...ancestors];
+---
+
+<BaseLayout {locale} {title} {description} {alternatePath}>
+	<InternalPageHero heading={title} {description} kicker={layoutText[locale].siteName}>
+		<Breadcrumbs slot="breadcrumbs" label={text.breadcrumb} ancestors={breadcrumbs} current={title} />
+	</InternalPageHero>
+	<div class="bg-surface">
+		<Container class:list={['py-block', contents?.length && 'editorial-grid']}>
+			{contents?.length ? (
+				<div class="min-w-0 md:col-span-12 lg:sticky lg:top-6 lg:col-span-4 lg:self-start lg:pe-grid">
+					<PageContents label={text.contents} items={contents} />
+				</div>
+			) : null}
+			<div class:list={['min-w-0 space-y-block', contents?.length && 'md:col-span-12 lg:col-span-8']}>
+				<slot />
+			</div>
+		</Container>
+	</div>
+</BaseLayout>

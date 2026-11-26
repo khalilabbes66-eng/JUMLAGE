@@ -1,0 +1,51 @@
+---
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import type { Locale } from '../i18n/navigation';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+	locale: Locale;
+	title: string;
+	heading?: string;
+	description?: string;
+	kicker?: string;
+	headingSize?: 'page' | 'display';
+	alternatePath?: string | null;
+	as?: 'div' | 'article';
+}
+
+const {
+	locale, title, heading = title, description, kicker, headingSize = 'page',
+	alternatePath, as: Tag = 'div',
+} = Astro.props;
+const hasBody = Astro.slots.has('default');
+const hasMedia = Astro.slots.has('media');
+---
+
+<BaseLayout {locale} {title} {description} {alternatePath}>
+	<Tag>
+		<Section as="header" class:list={{ 'border-b border-divider': hasBody }}>
+			<div class="editorial-grid items-center">
+				<div class:list={['min-w-0', hasMedia ? 'md:col-span-6 lg:col-span-5' : 'md:col-span-9']}>
+					<div class="editorial-label mb-5 flex items-center gap-3 text-muted" aria-hidden={kicker ? undefined : 'true'}>
+						<span class="h-0.5 w-7 shrink-0 bg-accent" aria-hidden="true"></span>
+						{kicker}
+					</div>
+					<SectionHeading as="h1" size={headingSize} {heading} {description} />
+					{Astro.slots.has('aside') && <div class="mt-block"><slot name="aside" /></div>}
+				</div>
+				{hasMedia && <div class="min-w-0 md:col-span-6 lg:col-span-7"><slot name="media" /></div>}
+			</div>
+		</Section>
+		{hasBody && (
+			<Container class="editorial-grid pt-block pb-section">
+				<div class="editorial-prose md:col-span-8">
+					<slot />
+				</div>
+			</Container>
+		)}
+		<slot name="after-intro" />
+	</Tag>
+</BaseLayout>

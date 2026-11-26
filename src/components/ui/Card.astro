@@ -1,0 +1,13 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'article'> & {
+	as?: 'article' | 'div';
+};
+
+const { as: Tag = 'article', class: className, ...attributes } = Astro.props;
+---
+
+<Tag {...attributes} class:list={['min-w-0 border border-divider bg-surface p-block text-ink', className]}>
+	<slot />
+</Tag>

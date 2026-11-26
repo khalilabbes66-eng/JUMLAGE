@@ -1,0 +1,56 @@
+---
+import {
+	contact, home, layoutText, localizedPath, navigation, project, projectSections,
+	publicationSections, withTrailingSlash, type Locale,
+} from '../../i18n/navigation';
+import NavigationLink from './NavigationLink.astro';
+
+interface Props {
+	locale: Locale;
+	class?: string;
+	variant?: 'desktop' | 'mobile';
+}
+
+const { locale, class: className, variant = 'desktop' } = Astro.props;
+const pathname = withTrailingSlash(Astro.url.pathname);
+const groups = [
+	{ label: project[locale].label, sections: projectSections },
+	{ label: layoutText[locale].publications, sections: publicationSections },
+];
+---
+
+<nav aria-label={layoutText[locale].navigation} class={className}>
+	{variant === 'mobile' ? (
+		<ul class="grid md:grid-cols-2 md:gap-x-grid" role="list">
+			{navigation.map((section) => (
+				<li class="min-w-0 border-b border-divider"><NavigationLink {locale} {pathname} {...section[locale]} /></li>
+			))}
+		</ul>
+	) : (
+		<ul class="flex items-center gap-4 xl:gap-8" role="list">
+			<li><NavigationLink {locale} {pathname} {...home[locale]} compact /></li>
+			{groups.map(({ label, sections }) => {
+				const active = sections.some((section) => pathname.startsWith(localizedPath(locale, section[locale].slug)));
+				return (
+					<li>
+						<details data-nav-disclosure="desktop" class="group relative">
+							<summary class:list={[
+								'tap-target interactive-color flex cursor-pointer list-none items-center gap-2 border-b-2 px-2 py-2 text-sm font-semibold hover:bg-canvas [&::-webkit-details-marker]:hidden',
+								active ? 'border-accent text-accent underline-offset-4 forced-colors:underline' : 'border-transparent text-primary',
+							]}>
+								{label}
+								<span aria-hidden="true" class="-mt-1 size-1.5 rotate-45 border-e border-b group-open:mt-1 group-open:rotate-225"></span>
+							</summary>
+							<ul class="absolute end-0 top-full z-20 mt-2 min-w-64 rounded-panel border border-divider bg-surface p-2" role="list">
+								{sections.map((section) => (
+									<li><NavigationLink {locale} {pathname} {...section[locale]} /></li>
+								))}
+							</ul>
+						</details>
+					</li>
+				);
+			})}
+			<li><NavigationLink {locale} {pathname} {...contact[locale]} compact /></li>
+		</ul>
+	)}
+</nav>

@@ -1,0 +1,60 @@
+---
+import { curriculumAnalysis } from '../../content/institutional';
+import { contributions, institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic } from '../../lib/institutional';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import EmptyState from '../ui/EmptyState.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const analysis = curriculumAnalysis[locale];
+const approved = analysis && isPublic(analysis) ? analysis : undefined;
+const legend = Object.values(contributions[locale]);
+---
+
+<div class="space-y-block">
+	<EditorialPanel id="contribution-matrix" heading={text.matrix}>
+		<ul class="mb-4 flex flex-wrap gap-x-3 gap-y-2 text-sm font-bold text-primary" role="list">
+			{legend.map((value) => <li class="border border-divider bg-canvas px-3 py-1">{value}</li>)}
+		</ul>
+		{approved?.rows.length && approved.subCompetencies.length ? (
+			<div tabindex="0" role="region" aria-labelledby="contribution-matrix-title" class="max-w-full overflow-x-auto border border-divider">
+				<table class="w-full border-collapse text-left text-sm">
+					<thead class="bg-primary text-surface">
+						<tr>
+							<th scope="col" class="min-w-36 p-3">{locale === 'en' ? 'Teaching unit' : 'Unité d’enseignement'}</th>
+							{approved.subCompetencies.map((column) => (
+								<th scope="col" class="min-w-36 border-s border-surface/30 p-3 wrap-anywhere">{column.title}</th>
+							))}
+						</tr>
+					</thead>
+					<tbody>
+						{approved.rows.map((row) => (
+							<tr class="border-t border-divider">
+								<th scope="row" class="bg-canvas p-3 wrap-anywhere text-primary">{row.title}</th>
+								{approved.subCompetencies.map((column) => {
+									const contribution = row.contributions[column.id];
+									return <td class="border-s border-divider p-3">{contribution ? contributions[locale][contribution] : text.unknown}</td>;
+								})}
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		) : <EmptyState label={text.pending} message={text.topicPending} />}
+	</EditorialPanel>
+	<EditorialPanel id="gap-analysis" heading={text.gaps}>
+		{approved?.gaps.length ? (
+			<ul class="space-y-4" role="list">
+				{approved.gaps.map((gap) => (
+					<li class="border-s-2 border-accent ps-3 wrap-anywhere">
+						<h3 class="font-extrabold text-primary">{gap.title}</h3>
+						<p class="text-sm text-muted">{gap.description}</p>
+					</li>
+				))}
+			</ul>
+		) : <EmptyState label={text.pending} message={text.topicPending} />}
+	</EditorialPanel>
+</div>

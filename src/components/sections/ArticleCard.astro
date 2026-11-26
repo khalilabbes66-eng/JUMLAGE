@@ -1,0 +1,30 @@
+---
+import { articleCategories, institutionalText } from '../../i18n/institutional';
+import { articlePath, formatDate } from '../../lib/institutional';
+import type { Article } from '../../types/institutional';
+import Badge from '../ui/Badge.astro';
+import Card from '../ui/Card.astro';
+import EditorialImage from '../ui/EditorialImage.astro';
+
+interface Props { article: Article }
+const { article } = Astro.props;
+const locale = article.language;
+const text = institutionalText[locale];
+---
+
+<Card class="h-full">
+	<EditorialImage image={article.featuredImage} />
+	<div class="mt-3 flex flex-wrap items-center gap-2">
+		<Badge>{articleCategories[locale][article.category]}</Badge>
+		{article.workPackage && <Badge variant="accent">{article.workPackage.toUpperCase()}</Badge>}
+	</div>
+	<h2 class="mt-2 text-xl font-extrabold text-primary">
+		<a href={articlePath(article)} class="tap-target inline-flex items-center wrap-anywhere underline underline-offset-4 hover:decoration-2">{article.title}</a>
+	</h2>
+	<p class="mt-2 text-sm wrap-anywhere text-muted">{article.summary}</p>
+	<dl class="mt-4 space-y-1 text-xs wrap-anywhere text-muted">
+		<div><dt class="inline font-bold">{text.publicationDate} · </dt><dd class="inline"><time datetime={article.publicationDate}>{formatDate(article.publicationDate, locale)}</time></dd></div>
+		{article.eventDate && <div><dt class="inline font-bold">{text.eventDate} · </dt><dd class="inline"><time datetime={article.eventDate}>{formatDate(article.eventDate, locale)}</time></dd></div>}
+		{article.location && <div><dt class="inline font-bold">{text.location} · </dt><dd class="inline">{article.location}</dd></div>}
+	</dl>
+</Card>

@@ -1,0 +1,20 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { formatDate } from '../../lib/institutional';
+import type { Media } from '../../types/institutional';
+import Card from '../ui/Card.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; item: Extract<Media, { kind: 'press' }>; href: string }
+const { locale, item, href } = Astro.props;
+---
+
+<Card class="h-full">
+	<p class="editorial-label text-muted">
+		{item.outlet}
+		{item.date && <> · <time datetime={item.date}>{formatDate(item.date, locale)}</time></>}
+	</p>
+	<h3 class="mt-2 text-xl font-extrabold wrap-anywhere text-primary">{item.title}</h3>
+	<EditorialLink {href} aria-label={institutionalText[locale].visit + ' — ' + item.title}>{institutionalText[locale].visit}</EditorialLink>
+</Card>

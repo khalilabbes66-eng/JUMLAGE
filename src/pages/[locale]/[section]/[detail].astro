@@ -1,0 +1,31 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ArticlePage from '../../../components/layout/ArticlePage.astro';
+import ProgrammePage from '../../../components/layout/ProgrammePage.astro';
+import ResultsPage from '../../../components/layout/ResultsPage.astro';
+import { programme } from '../../../content/institutional';
+import { locales, newsAndEvents, resultsAndResources, workProgramme } from '../../../i18n/navigation';
+import { publicArticles, resultTopics } from '../../../lib/institutional';
+
+export const getStaticPaths = (() => locales.flatMap((locale) => [
+	...programme.map((item) => ({
+		params: { locale, section: workProgramme[locale].slug, detail: item.id },
+		props: { locale, view: 'programme' as const, item },
+	})),
+	...resultTopics.map((topic) => ({
+		params: { locale, section: resultsAndResources[locale].slug, detail: topic[locale].slug },
+		props: { locale, view: 'results' as const, topic },
+	})),
+	...publicArticles(locale).map((article) => ({
+		params: { locale, section: newsAndEvents[locale].slug, detail: article.slug },
+		props: { locale, view: 'article' as const, article },
+	})),
+])) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const page = Astro.props;
+---
+
+{page.view === 'programme' && <ProgrammePage locale={page.locale} item={page.item} />}
+{page.view === 'results' && <ResultsPage locale={page.locale} topic={page.topic} />}
+{page.view === 'article' && <ArticlePage article={page.article} />}

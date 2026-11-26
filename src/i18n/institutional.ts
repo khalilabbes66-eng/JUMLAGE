@@ -1,0 +1,126 @@
+import type { Locale } from './navigation';
+import type { Article, CurriculumContribution, Resource, ResourceCategory, ResourceLanguage } from '../types/institutional';
+
+export const institutionalText = {
+	fr: {
+		breadcrumb: 'Fil d’Ariane', contents: 'Sur cette page', pending: 'Contenu en attente de validation',
+		partnersIntro: 'Les établissements partenaires et les instances du jumelage ENMV–ENVF.',
+		institutions: 'Établissements partenaires', support: 'Soutien de l’OMSA',
+		supportText: 'L’Organisation mondiale de la santé animale (OMSA) soutient le projet de jumelage ENMV–ENVF.',
+		coordination: 'Coordination du projet', coordinators: 'Responsables des volets de travail', team: 'Équipe du jumelage',
+		restricted: 'Comité restreint', extended: 'Comité élargi',
+		profilesPending: 'Les noms, titres et fonctions des membres seront affichés après validation.',
+		namePending: 'Nom en attente de validation', portraitPending: 'Portrait à venir', fieldPending: 'À confirmer',
+		academicTitle: 'Titre académique', discipline: 'Discipline', expertise: 'Expertise', institution: 'Établissement',
+		workPackage: 'Volet de travail', role: 'Fonction', committees: 'Comités',
+		programmeIntro: 'Les trois volets et les activités du programme de travail du jumelage ENMV–ENVF.',
+		activities: 'Activités', focus: 'Axes de travail', seeActivities: 'Voir les activités',
+		fundingTitle: 'Périmètre du financement',
+		fundingText: 'Le soutien de l’OMSA au jumelage ne finance pas la construction ni la rénovation d’un hôpital vétérinaire.',
+		fundingPending: 'La formulation officielle de cet avertissement doit être confirmée.',
+		newsIntro: 'Actualités et événements publiés dans le cadre du jumelage ENMV–ENVF.',
+		newsEmpty: 'Aucune actualité ou événement n’a encore été publié en français.',
+		relatedNews: 'Articles associés', relatedResources: 'Ressources associées',
+		publicationDate: 'Date de publication', eventDate: 'Date de l’événement', location: 'Lieu', category: 'Catégorie', activity: 'Activité',
+		articleSections: { context: 'Contexte', participants: 'Participants', workCompleted: 'Travaux réalisés', outcomes: 'Résultats', perspectives: 'Perspectives' },
+		articleGallery: 'Galerie de l’article',
+		resultsIntro: 'Accédez aux résultats du jumelage et à sa bibliothèque documentaire.',
+		topicPending: 'Les résultats détaillés seront accessibles après validation.',
+		frameworkIntro: 'Le référentiel s’organise en macrocompétences, sous-compétences et capacités.',
+		topicIntroductions: {
+			programme: 'Résultats relatifs à l’évolution du cursus et de l’internat.',
+			pedagogy: 'Résultats et ressources sur les méthodes pédagogiques.',
+			clinical: 'Résultats et ressources sur l’enseignement et l’environnement cliniques.',
+		},
+		frameworkCounts: ['Macrocompétences', 'Sous-compétences', 'Capacités'],
+		curriculumIntro: 'La cartographie décrit la contribution des enseignements au référentiel. L’acquisition effective des compétences se mesure séparément.',
+		matrix: 'Cartographie des contributions', subCompetency: 'Sous-compétence', gaps: 'Analyse des écarts', unknown: 'Non renseignée',
+		libraryIntro: 'Consultez les documents publiés et autorisés du projet.',
+		libraryEmpty: 'Aucun document autorisé n’est actuellement disponible dans la bibliothèque.',
+		authors: 'Auteurs', date: 'Date', version: 'Version', language: 'Langue', access: 'Accès',
+		search: 'Rechercher un document', filter: 'Filtrer', reset: 'Réinitialiser', all: 'Tous les choix', year: 'Année',
+		noMatches: 'Aucun résultat ne correspond aux filtres sélectionnés.',
+		pagination: 'Pagination', previous: 'Précédent', next: 'Suivant', page: 'Page', of: 'sur', matches: 'Résultats',
+		mediaIntro: 'Galeries, vidéos, retombées presse et communications institutionnelles publiées dans le cadre du jumelage.',
+		mediaEmpty: 'Aucun contenu autorisé n’est actuellement disponible dans cette rubrique.',
+		mediaKinds: { gallery: 'Galeries photo', video: 'Vidéos', press: 'Retombées presse', communication: 'Communications institutionnelles' },
+		photo: 'Photo', transcript: 'Lire la transcription', openVideo: 'Ouvrir la vidéo', playVideo: 'Afficher la vidéo', visit: 'Consulter la publication',
+		contactIntro: 'Coordonnées du projet et liens vers les sites officiels des établissements partenaires.',
+		generalContact: 'Contact général', institutionalContact: 'Contacts institutionnels', partnerLinks: 'Sites des partenaires',
+		contactPending: 'Les coordonnées seront affichées après validation.',
+		email: 'Courriel', telephone: 'Téléphone', address: 'Adresse',
+	},
+	en: {
+		breadcrumb: 'Breadcrumb', contents: 'On this page', pending: 'Content pending approval',
+		partnersIntro: 'The partner institutions and governance bodies of the ENMV–ENVF twinning project.',
+		institutions: 'Partner institutions', support: 'WOAH support',
+		supportText: 'The World Organisation for Animal Health (WOAH) supports the ENMV–ENVF twinning project.',
+		coordination: 'Project coordination', coordinators: 'Work Package coordinators', team: 'Twinning team',
+		restricted: 'Restricted committee', extended: 'Extended committee',
+		profilesPending: 'Member names, titles and roles will appear after approval.',
+		namePending: 'Name pending approval', portraitPending: 'Portrait forthcoming', fieldPending: 'To be confirmed',
+		academicTitle: 'Academic title', discipline: 'Discipline', expertise: 'Expertise', institution: 'Institution',
+		workPackage: 'Work Package', role: 'Institutional role', committees: 'Committees',
+		programmeIntro: 'The three Work Packages and activities of the ENMV–ENVF twinning project.',
+		activities: 'Activities', focus: 'Areas of work', seeActivities: 'See activities',
+		fundingTitle: 'Funding scope',
+		fundingText: 'WOAH support for the twinning project does not fund the construction or renovation of a veterinary hospital.',
+		fundingPending: 'The official wording of this disclaimer is pending confirmation.',
+		newsIntro: 'Published news and events from the ENMV–ENVF twinning project.',
+		newsEmpty: 'No news or events have been published in English yet.',
+		relatedNews: 'Related articles', relatedResources: 'Related resources',
+		publicationDate: 'Publication date', eventDate: 'Event date', location: 'Location', category: 'Category', activity: 'Activity',
+		articleSections: { context: 'Context', participants: 'Participants', workCompleted: 'Work completed', outcomes: 'Outcomes', perspectives: 'Perspectives' },
+		articleGallery: 'Article gallery',
+		resultsIntro: 'Explore project results and access the document library.',
+		topicPending: 'Detailed results will be available after approval.',
+		frameworkIntro: 'The framework is organised into macro-competencies, sub-competencies and capacities.',
+		topicIntroductions: {
+			programme: 'Results on the development of the curriculum and internship.',
+			pedagogy: 'Results and resources on teaching methods.',
+			clinical: 'Results and resources on clinical teaching and learning environments.',
+		},
+		frameworkCounts: ['Macro-competencies', 'Sub-competencies', 'Capacities'],
+		curriculumIntro: 'The mapping describes how teaching contributes to the framework. Actual competency acquisition is assessed separately.',
+		matrix: 'Curriculum contribution mapping', subCompetency: 'Sub-competency', gaps: 'Gap analysis', unknown: 'Unrecorded',
+		libraryIntro: 'Browse published project documents authorized for public access.',
+		libraryEmpty: 'The library has no documents authorized for public access at this time.',
+		authors: 'Authors', date: 'Date', version: 'Version', language: 'Language', access: 'Access',
+		search: 'Search documents', filter: 'Apply filters', reset: 'Reset', all: 'All options', year: 'Year',
+		noMatches: 'No results match the selected filters.',
+		pagination: 'Pagination', previous: 'Previous', next: 'Next', page: 'Page', of: 'of', matches: 'Results',
+		mediaIntro: 'Published photo galleries, videos, press coverage and institutional communications from the twinning project.',
+		mediaEmpty: 'This section has no content authorized for public access at this time.',
+		mediaKinds: { gallery: 'Photo galleries', video: 'Videos', press: 'Press coverage', communication: 'Institutional communications' },
+		photo: 'Photo', transcript: 'Read the transcript', openVideo: 'Open video', playVideo: 'Show video', visit: 'View the publication',
+		contactIntro: 'Project contact information and links to the partner institutions’ official websites.',
+		generalContact: 'General contact', institutionalContact: 'Institutional contacts', partnerLinks: 'Partner websites',
+		contactPending: 'Contact details will appear after approval.',
+		email: 'Email', telephone: 'Telephone', address: 'Address',
+	},
+} as const;
+
+export const articleCategories: Record<Locale, Record<Article['category'], string>> = {
+	fr: { news: 'Actualité', event: 'Événement', workshop: 'Atelier' },
+	en: { news: 'News', event: 'Event', workshop: 'Workshop' },
+};
+
+export const resourceCategories: Record<Locale, Record<ResourceCategory, string>> = {
+	fr: { reports: 'Rapports et bilans', frameworks: 'Référentiels de compétences', methodology: 'Documents méthodologiques', education: 'Ressources pédagogiques', publications: 'Publications scientifiques', communications: 'Communications scientifiques', international: 'Ressources internationales' },
+	en: { reports: 'Reports and assessments', frameworks: 'Competency frameworks', methodology: 'Methodological documents', education: 'Educational resources', publications: 'Scientific publications', communications: 'Scientific communications', international: 'International resources' },
+};
+
+export const resourceLanguages: Record<Locale, Record<ResourceLanguage, string>> = {
+	fr: { fr: 'Français', en: 'Anglais', multilingual: 'Multilingue' },
+	en: { fr: 'French', en: 'English', multilingual: 'Multilingual' },
+};
+
+export const resourceAccess: Record<Locale, Record<Resource['access']['type'], string>> = {
+	fr: { consultation: 'Consulter', download: 'Télécharger', external: 'Ouvrir la ressource externe' },
+	en: { consultation: 'View document', download: 'Download', external: 'Open external resource' },
+};
+
+export const contributions: Record<Locale, Record<CurriculumContribution, string>> = {
+	fr: { direct: 'Directe', indirect: 'Indirecte', absent: 'Absente' },
+	en: { direct: 'Direct', indirect: 'Indirect', absent: 'Absent' },
+};

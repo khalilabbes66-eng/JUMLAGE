@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+const variants = {
+	primary: 'border-primary bg-primary text-surface not-disabled:hover:bg-primary/90 not-disabled:active:bg-primary/85',
+	secondary: 'border-primary bg-surface text-primary not-disabled:hover:bg-canvas not-disabled:active:bg-primary/10',
+	accent: 'border-accent bg-accent text-surface not-disabled:hover:border-accent-hover not-disabled:hover:bg-accent-hover not-disabled:active:border-accent-hover not-disabled:active:bg-accent-hover',
+};
+
+type Props = {
+	variant?: keyof typeof variants;
+} & (
+	| (HTMLAttributes<'a'> & { href: string })
+	| (HTMLAttributes<'button'> & { href?: never })
+);
+
+const { variant = 'primary', class: className, ...attributes } = Astro.props;
+const classes = [
+	'tap-target interactive-color inline-flex max-w-full items-center justify-center gap-4 rounded-panel border px-5 py-3 text-center text-sm leading-snug font-bold wrap-break-word no-underline disabled:cursor-not-allowed disabled:opacity-60',
+	variants[variant],
+	className,
+];
+---
+
+{attributes.href !== undefined ? (
+	<a {...attributes} class:list={classes}><slot /></a>
+) : (
+	<button {...attributes} type={attributes.type ?? 'button'} class:list={classes}><slot /></button>
+)}

@@ -1,0 +1,63 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import { localizedPath, resultsAndResources, type Locale } from '../../i18n/navigation';
+import { alternateLocale, publicResources, resultTopics, topicPath } from '../../lib/institutional';
+import CompetencyFramework from '../sections/CompetencyFramework.astro';
+import CurriculumMatrix from '../sections/CurriculumMatrix.astro';
+import DocumentLibrary from '../sections/DocumentLibrary.astro';
+import ResourceCard from '../sections/ResourceCard.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale; topic?: (typeof resultTopics)[number] }
+const { locale, topic } = Astro.props;
+const text = institutionalText[locale];
+const parent = resultsAndResources[locale];
+const intro = topic?.id === 'competencies' ? text.frameworkIntro
+	: topic?.id === 'curriculum' ? text.curriculumIntro
+	: topic?.id === 'library' ? text.libraryIntro
+	: topic ? text.topicIntroductions[topic.id] : text.resultsIntro;
+const resources = topic && publicResources().filter((item) => item.topic === topic.id);
+const library = resultTopics.find((item) => item.id === 'library')!;
+---
+
+<InstitutionalPage
+	{locale}
+	title={topic?.[locale].title ?? parent.label}
+	description={intro}
+	ancestors={topic ? [{ label: parent.label, href: localizedPath(locale, parent.slug) }] : undefined}
+	alternatePath={topic ? topicPath(alternateLocale(locale), topic) : undefined}
+>
+	{!topic && (
+		<ol class="grid gap-x-grid md:grid-cols-2" role="list">
+			{resultTopics.map((item, index) => (
+				<li class="min-w-0 border-y border-divider py-2">
+					<EditorialLink href={topicPath(locale, item)} class="w-full gap-3">
+						<span aria-hidden="true" class="text-muted tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+						<span>{item[locale].title}</span>
+						<span aria-hidden="true" class="ms-auto">→</span>
+					</EditorialLink>
+				</li>
+			))}
+		</ol>
+	)}
+	{topic?.id === 'competencies' && <CompetencyFramework {locale} />}
+	{topic?.id === 'curriculum' && <CurriculumMatrix {locale} />}
+	{topic?.id === 'library' && <DocumentLibrary {locale} />}
+	{topic && topic.id !== 'library' && (
+		<>
+			{resources?.length ? (
+				<section aria-labelledby="topic-resources" class="border-t border-divider pt-block">
+					<h2 id="topic-resources" class="mb-4 text-heading font-extrabold text-primary">{text.relatedResources}</h2>
+					<ul class="grid gap-grid md:grid-cols-2" role="list">
+						{resources.map((resource) => <li class="min-w-0"><ResourceCard {locale} {resource} headingLevel="h3" /></li>)}
+					</ul>
+				</section>
+			) : topic.id !== 'competencies' && topic.id !== 'curriculum' && (
+				<EmptyState label={text.pending} message={text.topicPending} />
+			)}
+			<EditorialLink href={topicPath(locale, library)}>{library[locale].title}</EditorialLink>
+		</>
+	)}
+</InstitutionalPage>

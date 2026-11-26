@@ -1,0 +1,55 @@
+---
+import { programme } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import { localizedPath, workProgramme, type Locale } from '../../i18n/navigation';
+import { alternateLocale, packagePath, relatedEntries } from '../../lib/institutional';
+import type { WorkPackage } from '../../types/institutional';
+import ActivityItem from '../sections/ActivityItem.astro';
+import RelatedEntries from '../sections/RelatedEntries.astro';
+import WorkPackageCard from '../sections/WorkPackageCard.astro';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale; item?: WorkPackage }
+const { locale, item } = Astro.props;
+const text = institutionalText[locale];
+const parent = workProgramme[locale];
+const related = item && relatedEntries(locale, { workPackage: item.id, articleIds: item.relatedArticleIds, resourceIds: item.relatedResourceIds });
+---
+
+<InstitutionalPage
+	{locale}
+	title={item ? item.code + ' — ' + item.title[locale] : parent.label}
+	description={text.programmeIntro}
+	ancestors={item ? [{ label: parent.label, href: localizedPath(locale, parent.slug) }] : undefined}
+	alternatePath={item ? packagePath(alternateLocale(locale), item.id) : undefined}
+>
+	{item ? (
+		<>
+			{item.id === 'wp2' && (
+				<aside aria-labelledby="funding-scope" class="border-s-2 border-accent bg-canvas p-4">
+					<h2 id="funding-scope" class="font-extrabold text-primary">{text.fundingTitle}</h2>
+					<p class="mt-2">{text.fundingText}</p>
+					<p class="mt-2 text-sm text-muted">{text.fundingPending}</p>
+				</aside>
+			)}
+			{item.focus && (
+				<EditorialPanel id="focus" heading={text.focus}>
+					<ul class="grid gap-grid sm:grid-cols-3" role="list">
+						{item.focus.map((focus) => <li class="border-s-2 border-accent bg-canvas p-4 font-bold text-primary">{focus[locale]}</li>)}
+					</ul>
+				</EditorialPanel>
+			)}
+			<EditorialPanel id="activities" heading={text.activities}>
+				<ol class="border-t border-divider" role="list">
+					{item.activities.map((activity) => <ActivityItem {locale} {activity} />)}
+				</ol>
+				{related && <RelatedEntries {locale} {...related} />}
+			</EditorialPanel>
+		</>
+	) : (
+		<ul class="grid gap-grid md:grid-cols-3" role="list">
+			{programme.map((workPackage) => <li class="min-w-0"><WorkPackageCard {locale} item={workPackage} /></li>)}
+		</ul>
+	)}
+</InstitutionalPage>

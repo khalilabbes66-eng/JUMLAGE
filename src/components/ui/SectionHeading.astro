@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'> & {
+	heading: string;
+	headingId?: string;
+	as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+	description?: string;
+	size?: 'display' | 'page' | 'section';
+};
+
+const { heading, headingId, as: Heading = 'h2', description, size = 'section', class: className, ...attributes } = Astro.props;
+const sizes = {
+	display: 'text-display font-extrabold -tracking-[0.06em]',
+	page: 'text-page font-bold -tracking-[0.05em]',
+	section: 'text-heading font-bold -tracking-[0.035em]',
+};
+---
+
+<div {...attributes} class:list={['min-w-0 max-w-prose', className]}>
+	<Heading id={headingId} class:list={['text-balance wrap-break-word text-primary', sizes[size]]}>
+		{heading}
+	</Heading>
+	{description && <p class="mt-4 text-body text-pretty text-muted">{description}</p>}
+</div>

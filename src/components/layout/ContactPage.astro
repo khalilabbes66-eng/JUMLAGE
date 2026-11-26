@@ -1,0 +1,44 @@
+---
+import { contactInformation, institutions } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import { contact, type Locale } from '../../i18n/navigation';
+import { isPublic } from '../../lib/institutional';
+import InstitutionLinks from '../sections/InstitutionLinks.astro';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const contacts = contactInformation.filter(isPublic);
+const contents = [
+	{ id: 'general-contact', heading: text.generalContact, records: contacts.filter((item) => !item.institution) },
+	{ id: 'institutional-contacts', heading: text.institutionalContact, records: contacts.filter((item) => item.institution) },
+	{ id: 'partner-websites', heading: text.partnerLinks },
+];
+---
+
+<InstitutionalPage {locale} title={contact[locale].label} description={text.contactIntro} {contents}>
+	{contents.map(({ id, heading, records }) => (
+		<EditorialPanel {id} {heading}>
+			{!records ? <InstitutionLinks {locale} /> : records.length === 0 ? (
+				<EmptyState label={text.pending} message={text.contactPending} />
+			) : (
+				<ul class="grid gap-grid sm:grid-cols-2" role="list">
+					{records.map((record) => (
+						<li class="min-w-0 border-s-2 border-accent bg-canvas p-4 wrap-anywhere">
+							<h3 class="font-bold text-primary">{record.label[locale]}</h3>
+							{record.institution && <p class="text-sm text-muted">{institutions.find((item) => item.id === record.institution)?.name}</p>}
+							<dl class="mt-3 space-y-2 text-sm">
+								{record.email && <div><dt class="font-bold">{text.email}</dt><dd><a href={'mailto:' + record.email} class="tap-target inline-flex items-center underline">{record.email}</a></dd></div>}
+								{record.telephone && <div><dt class="font-bold">{text.telephone}</dt><dd><a href={'tel:' + record.telephone.replace(/[^+\d]/g, '')} class="tap-target inline-flex items-center underline">{record.telephone}</a></dd></div>}
+								{record.address?.length ? <div><dt class="font-bold">{text.address}</dt><dd>{record.address.map((line) => <span class="block">{line}</span>)}</dd></div> : null}
+							</dl>
+						</li>
+					))}
+				</ul>
+			)}
+		</EditorialPanel>
+	))}
+</InstitutionalPage>

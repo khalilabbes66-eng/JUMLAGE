@@ -1,0 +1,15 @@
+---
+import Badge from './Badge.astro';
+
+interface Props {
+	message: string;
+	label?: string;
+}
+
+const { message, label } = Astro.props;
+---
+
+<div class="border-s-2 border-accent bg-canvas px-4 py-4">
+	{label && <Badge>{label}</Badge>}
+	<p class:list={['text-sm wrap-anywhere text-muted', label && 'mt-2']}>{message}</p>
+</div>

@@ -1,0 +1,124 @@
+@import 'tailwindcss';
+
+@font-face {
+	font-family: 'Plus Jakarta Sans';
+	src: url('/fonts/PlusJakartaSans-Latin.woff2') format('woff2');
+	font-weight: 200 800;
+	font-style: normal;
+	font-display: swap;
+}
+
+@theme static {
+	--color-canvas: #f5f5f7;
+	--color-surface: #ffffff;
+	--color-primary: #18181b;
+	--color-accent: #2563eb;
+	--color-accent-hover: #1d4ed8;
+	--color-ink: var(--color-primary);
+	--color-muted: #52525b;
+	--color-divider: #d4d4d8;
+	--font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+	--container-content: 85rem;
+	--container-prose: 65ch;
+	--radius-panel: 0.25rem;
+	--spacing-gutter: clamp(1.125rem, 0.55rem + 2.8vi, 4rem);
+	--spacing-grid: clamp(1rem, 0.5rem + 1.6vi, 2rem);
+	--spacing-block: clamp(1.5rem, 1rem + 2vi, 3rem);
+	--spacing-section: clamp(3.5rem, 2rem + 4.8vi, 7rem);
+	--text-body: clamp(1rem, 0.96rem + 0.2vi, 1.125rem);
+	--text-body--line-height: 1.65;
+	--text-masthead: clamp(1.25rem, 1rem + 0.8vi, 1.75rem);
+	--text-masthead--line-height: 1.18;
+	--text-heading: clamp(1.5rem, 1.15rem + 1.5vi, 2.75rem);
+	--text-heading--line-height: 1.16;
+	--text-page: clamp(2.125rem, 1.2rem + 3.4vi, 4.75rem);
+	--text-page--line-height: 1.08;
+	--text-display: clamp(2.5rem, 1.2rem + 5.45vi, 7rem);
+	--text-display--line-height: 1.02;
+}
+
+@utility editorial-label {
+	@apply text-xs leading-snug font-bold tracking-[0.13em] uppercase;
+}
+
+@utility editorial-grid {
+	@apply grid grid-cols-1 gap-x-grid gap-y-block md:grid-cols-12;
+}
+
+@utility tap-target {
+	min-block-size: 2.75rem;
+	min-inline-size: 2.75rem;
+}
+
+@utility interactive-color {
+	@media (prefers-reduced-motion: no-preference) {
+		transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+	}
+}
+
+@utility editorial-prose {
+	@apply min-w-0 max-w-prose wrap-break-word;
+
+	& > * + * {
+		margin-block-start: 1em;
+	}
+
+	& :where(h2, h3, h4) {
+		@apply leading-tight font-semibold text-primary;
+		margin-block-start: 1.6em;
+	}
+
+	& :where(h2) {
+		@apply text-heading;
+	}
+
+	& :where(h3) {
+		@apply text-xl;
+	}
+
+	& :where(ul, ol) {
+		padding-inline-start: 1.5em;
+	}
+
+	& :where(ul) {
+		list-style: disc;
+	}
+
+	& :where(ol) {
+		list-style: decimal;
+	}
+
+	& :where(a[href]):not([class]) {
+		@apply text-primary underline underline-offset-4 hover:decoration-2;
+	}
+
+	& :where(figure) {
+		margin-block: var(--spacing-block);
+	}
+
+	& :where(figcaption) {
+		@apply mt-2 text-sm text-muted;
+	}
+
+	& :where(blockquote) {
+		@apply border-s-2 border-accent ps-4 text-primary;
+	}
+}
+
+@layer base {
+	body {
+		@apply bg-canvas font-sans text-body text-ink;
+	}
+
+	:where(a[href], button, input, select, textarea, summary, [tabindex]):focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+		box-shadow: 0 0 0 3px var(--color-surface);
+	}
+
+	@media (forced-colors: active) {
+		:where(a[href], button, input, select, textarea, summary, [tabindex]):focus-visible {
+			outline-color: Highlight;
+		}
+	}
+}

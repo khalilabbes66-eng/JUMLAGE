@@ -1,0 +1,85 @@
+---
+import { getKeyFigures, homepageText, projectPeriod, workPackages } from '../../i18n/homepage';
+import {
+	home, layoutText, localizedPath, newsAndEvents, partners, project, resultsAndResources,
+	sections, workProgramme, type Locale,
+} from '../../i18n/navigation';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { articlePath, formatDate, publicArticles } from '../../lib/institutional';
+import AboutSection from '../sections/AboutSection.astro';
+import HeroSection from '../sections/HeroSection.astro';
+import KeyFigures from '../sections/KeyFigures.astro';
+import LatestNewsSection from '../sections/LatestNewsSection.astro';
+import ResourcesSection from '../sections/ResourcesSection.astro';
+import WorkPackagesSection from '../sections/WorkPackagesSection.astro';
+import Section from '../ui/Section.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = homepageText[locale];
+const packages = workPackages.map((item) => ({ code: item.code, title: item[locale] }));
+const latestNews = publicArticles(locale).slice(0, 3).map((article) => ({
+	title: article.title,
+	href: articlePath(article),
+	summary: article.summary,
+	date: { iso: article.publicationDate, label: formatDate(article.publicationDate, locale) },
+}));
+---
+
+<BaseLayout {locale} title={home[locale].label} description={text.aboutDescription}>
+	<HeroSection
+		heading="ENMV–ENVF"
+		kicker={`${layoutText[locale].projectType} / ${projectPeriod}`}
+		href={localizedPath(locale, project[locale].slug)}
+		linkLabel={text.exploreProject}
+		photoPlaceholder={text.photoPlaceholder}
+	/>
+	<KeyFigures heading={text.figures} figures={getKeyFigures(locale)} />
+	<AboutSection
+		heading={text.aboutHeading}
+		description={text.aboutDescription}
+		href={localizedPath(locale, partners[locale].slug)}
+		linkLabel={text.partnersLink}
+	/>
+	<WorkPackagesSection
+		heading={text.workPackages}
+		{packages}
+		href={localizedPath(locale, workProgramme[locale].slug)}
+		linkLabel={text.programmeLink}
+	/>
+	<LatestNewsSection
+		heading={text.latestNews}
+		entries={latestNews}
+		placeholderLabel={text.placeholder}
+		emptyMessage={text.newsEmpty}
+		href={localizedPath(locale, newsAndEvents[locale].slug)}
+		linkLabel={text.newsLink}
+	/>
+	<ResourcesSection
+		heading={text.resources}
+		placeholderLabel={text.placeholder}
+		emptyMessage={text.resourcesEmpty}
+		href={localizedPath(locale, resultsAndResources[locale].slug)}
+		linkLabel={text.resourcesLink}
+	/>
+	<Section aria-labelledby="site-index" class="border-t border-divider bg-surface">
+		<div class="editorial-grid">
+			<SectionHeading headingId="site-index" heading={text.exploreSite} class="md:col-span-4" />
+			<ol class="grid gap-x-grid md:col-span-8 md:grid-cols-2" role="list">
+				{sections.map((section, index) => (
+					<li class="min-w-0 border-t border-divider">
+						<a href={localizedPath(locale, section[locale].slug)} class="tap-target interactive-color grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-3 text-sm font-bold text-primary underline-offset-4 hover:bg-canvas hover:underline">
+							<span aria-hidden="true" class="text-xs font-bold text-muted tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+							<span class="wrap-anywhere">{section[locale].label}</span>
+							<span aria-hidden="true" class="pe-2">↗</span>
+						</a>
+					</li>
+				))}
+			</ol>
+		</div>
+	</Section>
+</BaseLayout>

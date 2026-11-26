@@ -1,0 +1,22 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { packagePath } from '../../lib/institutional';
+import type { WorkPackage } from '../../types/institutional';
+import Badge from '../ui/Badge.astro';
+import Card from '../ui/Card.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; item: WorkPackage }
+const { locale, item } = Astro.props;
+---
+
+<Card class="flex h-full flex-col">
+	<Badge variant="accent" class="self-start">{item.code}</Badge>
+	<h2 class="mt-3 text-heading font-extrabold wrap-anywhere text-primary">{item.title[locale]}</h2>
+	<div class="mt-auto pt-3">
+		<EditorialLink href={packagePath(locale, item.id)} aria-label={institutionalText[locale].seeActivities + ' — ' + item.code + ' ' + item.title[locale]}>
+			{institutionalText[locale].seeActivities} <span aria-hidden="true" class="ms-2">→</span>
+		</EditorialLink>
+	</div>
+</Card>

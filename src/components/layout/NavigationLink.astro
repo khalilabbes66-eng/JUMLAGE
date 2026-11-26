@@ -1,0 +1,28 @@
+---
+import { localizedPath, type Locale } from '../../i18n/navigation';
+
+interface Props {
+	locale: Locale;
+	pathname: string;
+	slug: string;
+	label: string;
+	compact?: boolean;
+}
+
+const { locale, pathname, slug, label, compact = false } = Astro.props;
+const href = localizedPath(locale, slug);
+const current = pathname === href;
+const active = current || (slug !== '' && pathname.startsWith(href));
+---
+
+<a
+	{href}
+	aria-current={current ? 'page' : active ? 'location' : undefined}
+	class:list={[
+		'tap-target interactive-color flex items-center py-2 text-sm leading-snug font-semibold wrap-anywhere underline-offset-4 hover:bg-canvas hover:underline active:bg-primary/10',
+		compact ? 'border-b-2 px-2' : 'border-s-2 px-3',
+		active ? 'border-accent text-accent active:text-accent-hover forced-colors:underline' : 'border-transparent text-primary',
+	]}
+>
+	{label}
+</a>

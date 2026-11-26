@@ -1,0 +1,26 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic, publicHref, videoLinks } from '../../lib/institutional';
+import type { Media } from '../../types/institutional';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; video: Extract<Media, { kind: 'video' }> }
+const { locale, video } = Astro.props;
+const text = institutionalText[locale];
+const links = isPublic(video) ? videoLinks(video) : undefined;
+const transcript = video.transcriptHref && publicHref(video.transcriptHref);
+---
+
+{links && (
+	<div class="space-y-2">
+		<details class="border border-divider px-3">
+			<summary class="tap-target flex cursor-pointer items-center text-sm font-bold text-primary underline underline-offset-4">{text.playVideo}</summary>
+			<iframe src={links.embed} title={video.title} class="mb-3 aspect-video w-full" loading="lazy" allow="fullscreen; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+		</details>
+		<div class="flex flex-wrap gap-x-4">
+			<EditorialLink href={links.watch}>{text.openVideo}</EditorialLink>
+			{transcript && <EditorialLink href={transcript}>{text.transcript}</EditorialLink>}
+		</div>
+	</div>
+)}

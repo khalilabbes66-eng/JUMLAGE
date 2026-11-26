@@ -1,0 +1,20 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic } from '../../lib/institutional';
+import type { Person } from '../../types/institutional';
+import EmptyState from '../ui/EmptyState.astro';
+import PersonProfile from './PersonProfile.astro';
+
+interface Props { locale: Locale; people: readonly Person[]; compactEmpty?: boolean }
+const { locale, people, compactEmpty = false } = Astro.props;
+const text = institutionalText[locale];
+const profiles = people.filter(isPublic);
+---
+
+{profiles.length ? (
+	<ul class="grid gap-grid xl:grid-cols-2" role="list">
+		{profiles.map((person) => <li class="min-w-0"><PersonProfile {locale} {person} /></li>)}
+	</ul>
+) : compactEmpty ? <p class="text-sm text-muted">{text.profilesPending}</p>
+	: <EmptyState label={text.pending} message={text.profilesPending} />}

@@ -1,0 +1,40 @@
+---
+import Button from '../ui/Button.astro';
+import Section from '../ui/Section.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+	heading: string;
+	kicker: string;
+	href: string;
+	linkLabel: string;
+	photoPlaceholder: string;
+}
+
+const { heading, kicker, href, linkLabel, photoPlaceholder } = Astro.props;
+---
+
+<Section as="header">
+	<div class="editorial-grid items-center">
+		<div class="min-w-0 md:col-span-6 lg:col-span-5">
+			<p class="editorial-label mb-5 flex items-center gap-3 text-muted">
+				<span class="h-0.5 w-7 shrink-0 bg-accent" aria-hidden="true"></span>
+				{kicker}
+			</p>
+			<SectionHeading as="h1" size="display" {heading} />
+			<div class="mt-block">
+				<Button {href} variant="accent">
+					<span>{linkLabel}</span>
+					<span aria-hidden="true">→</span>
+				</Button>
+			</div>
+		</div>
+		<div class="min-w-0 md:col-span-6 lg:col-span-7">
+			<slot name="media">
+				<div class="grid aspect-3/2 w-full place-items-center border border-divider bg-surface px-4 text-center">
+					<p class="editorial-label text-muted">{photoPlaceholder}</p>
+				</div>
+			</slot>
+		</div>
+	</div>
+</Section>

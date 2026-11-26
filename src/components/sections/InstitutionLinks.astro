@@ -1,0 +1,17 @@
+---
+import { institutions } from '../../content/institutional';
+import type { Locale } from '../../i18n/navigation';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+
+<ul class="grid gap-x-grid sm:grid-cols-2" role="list">
+	{institutions.map((institution) => (
+		<li class="flex min-w-0 flex-wrap items-center justify-between gap-x-4 border-b border-divider py-1">
+			<EditorialLink href={institution.website}>{institution.name}</EditorialLink>
+			<span class="text-sm text-muted">{institution.country[locale]}</span>
+		</li>
+	))}
+</ul>

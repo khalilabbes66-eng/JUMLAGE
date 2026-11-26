@@ -1,0 +1,25 @@
+---
+interface Props {
+	label: string;
+	items: ReadonlyArray<{ id: string; heading: string }>;
+}
+
+const { label, items } = Astro.props;
+---
+
+<nav aria-label={label}>
+	<p class="editorial-label mb-3 text-primary">{label}</p>
+	<ol class="border-t border-divider" role="list">
+		{items.map(({ id, heading }, index) => (
+			<li class="border-b border-divider">
+				<a
+					href={`#${id}`}
+					class="tap-target interactive-color grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 px-2 py-2 text-sm font-bold text-primary underline-offset-4 hover:bg-canvas hover:underline"
+				>
+					<span aria-hidden="true" class="text-xs text-muted tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+					<span class="wrap-anywhere">{heading}</span>
+				</a>
+			</li>
+		))}
+	</ol>
+</nav>

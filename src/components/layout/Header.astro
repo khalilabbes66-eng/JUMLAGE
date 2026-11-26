@@ -1,0 +1,62 @@
+---
+import { layoutText, localizedPath, type Locale } from '../../i18n/navigation';
+import Container from '../ui/Container.astro';
+import InstitutionalBanner from './InstitutionalBanner.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import MobileMenu from './MobileMenu.astro';
+import Navigation from './Navigation.astro';
+
+interface Props {
+	locale: Locale;
+	alternatePath?: string;
+}
+
+const { locale, alternatePath } = Astro.props;
+---
+
+<header class="border-b border-divider bg-surface">
+	<div class="border-b border-divider bg-canvas">
+		<Container class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-1">
+			<InstitutionalBanner locale={locale} />
+			<LanguageSwitcher locale={locale} alternatePath={alternatePath} />
+		</Container>
+	</div>
+	<Container class="flex items-center justify-between gap-grid py-4 lg:py-5">
+		<a href={localizedPath(locale)} class="tap-target inline-flex max-w-full flex-col justify-center text-primary underline-offset-4 hover:underline">
+			<span class="text-masthead font-extrabold tracking-tight">ENMV–ENVF</span>
+			<span class="editorial-label mt-1 text-muted">{layoutText[locale].projectType}</span>
+		</a>
+		<Navigation locale={locale} class="hidden lg:block" />
+	</Container>
+	<div class="border-t border-divider lg:hidden">
+		<Container>
+			<MobileMenu locale={locale} />
+		</Container>
+	</div>
+</header>
+
+<script>
+	const menus = document.querySelectorAll<HTMLDetailsElement>('[data-nav-disclosure]');
+
+	for (const menu of menus) {
+		menu.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && menu.open) {
+				event.preventDefault();
+				menu.open = false;
+				menu.querySelector('summary')?.focus();
+			}
+		});
+		if (menu.dataset.navDisclosure === 'desktop') {
+			menu.addEventListener('focusout', (event) => {
+				if (event.relatedTarget instanceof Node && !menu.contains(event.relatedTarget)) menu.open = false;
+			});
+		}
+	}
+
+	document.addEventListener('click', (event) => {
+		if (!(event.target instanceof Node)) return;
+		for (const menu of menus) {
+			if (menu.dataset.navDisclosure === 'desktop' && !menu.contains(event.target)) menu.open = false;
+		}
+	});
+</script>

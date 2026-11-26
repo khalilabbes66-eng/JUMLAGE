@@ -1,0 +1,31 @@
+---
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import Card from '../ui/Card.astro';
+import Section from '../ui/Section.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+	heading: string;
+	packages: ReadonlyArray<{ code: string; title: string }>;
+	href: string;
+	linkLabel: string;
+}
+
+const { heading, packages, href, linkLabel } = Astro.props;
+---
+
+<Section aria-labelledby="work-packages-title" class="border-t border-divider">
+	<SectionHeading headingId="work-packages-title" {heading} />
+	<ol class="mt-block grid gap-grid md:grid-cols-3" role="list">
+		{packages.map(({ code, title }) => (
+			<li class="min-w-0">
+				<Card as="div" class="h-full">
+					<Badge variant="accent">{code}</Badge>
+					<h3 class="mt-4 text-heading font-extrabold wrap-break-word text-primary">{title}</h3>
+				</Card>
+			</li>
+		))}
+	</ol>
+	<Button {href} variant="secondary" class="mt-block">{linkLabel}</Button>
+</Section>

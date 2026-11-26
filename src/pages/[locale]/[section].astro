@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import ContactPage from '../../components/layout/ContactPage.astro';
+import MediaPage from '../../components/layout/MediaPage.astro';
+import NewsPage from '../../components/layout/NewsPage.astro';
+import PartnersPage from '../../components/layout/PartnersPage.astro';
+import ProgrammePage from '../../components/layout/ProgrammePage.astro';
+import ProjectPage from '../../components/layout/ProjectPage.astro';
+import ResultsPage from '../../components/layout/ResultsPage.astro';
+import Button from '../../components/ui/Button.astro';
+import Card from '../../components/ui/Card.astro';
+import {
+	communicationAndMedia, contact, layoutText, locales, localizedPath, newsAndEvents, partners,
+	project, resultsAndResources, sections, workProgramme,
+} from '../../i18n/navigation';
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+
+export const getStaticPaths = (() => locales.flatMap((locale) =>
+	sections.map((section) => ({
+		params: { locale, section: section[locale].slug },
+		props: { locale, label: section[locale].label },
+	})),
+)) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+const { locale, label } = Astro.props;
+const text = layoutText[locale];
+const pages = new Map([
+	[project[locale].slug, ProjectPage],
+	[partners[locale].slug, PartnersPage],
+	[workProgramme[locale].slug, ProgrammePage],
+	[newsAndEvents[locale].slug, NewsPage],
+	[resultsAndResources[locale].slug, ResultsPage],
+	[communicationAndMedia[locale].slug, MediaPage],
+	[contact[locale].slug, ContactPage],
+]);
+const Page = pages.get(Astro.params.section ?? '');
+---
+
+{Page ? (
+	<Page {locale} />
+) : (
+	<EditorialLayout {locale} title={label}>
+		<Card as="div">
+			<p class="mb-5 text-muted">{text.sectionEmpty}</p>
+			<Button href={localizedPath(locale)} variant="secondary">{text.returnHome}</Button>
+		</Card>
+	</EditorialLayout>
+)}

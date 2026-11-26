@@ -1,0 +1,42 @@
+---
+import { institutions } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic, publicHref } from '../../lib/institutional';
+import type { Person } from '../../types/institutional';
+import Card from '../ui/Card.astro';
+import EditorialImage from '../ui/EditorialImage.astro';
+
+interface Props { locale: Locale; person: Person }
+const { locale, person } = Astro.props;
+const text = institutionalText[locale];
+const portrait = person.portrait?.[locale];
+const fields = [
+	{ label: text.academicTitle, value: person.academicTitle?.[locale] },
+	{ label: text.discipline, value: person.discipline?.[locale] },
+	{ label: text.expertise, value: person.expertise?.[locale] },
+	{ label: text.institution, value: institutions.find((item) => item.id === person.institution)?.name },
+	{ label: text.workPackage, value: person.workPackages.map((id) => id.toUpperCase()).join(', ') },
+	{ label: text.role, value: person.institutionalRole?.[locale] },
+	{ label: text.committees, value: person.committees.map((committee) => text[committee]).join(', ') },
+];
+---
+
+{isPublic(person) && (
+	<Card class="h-full">
+		<h3 class="text-xl font-extrabold wrap-anywhere text-primary">{person.fullName || text.namePending}</h3>
+		<div class="mt-4 grid items-start gap-grid sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+			{portrait && isPublic(portrait) && publicHref(portrait.src)
+				? <EditorialImage image={portrait} sizes="(min-width: 64rem) 12rem, 40vw" />
+				: <p class="grid aspect-square place-items-center border border-dashed border-divider bg-canvas p-3 text-center text-sm text-muted">{text.portraitPending}</p>}
+			<dl class="min-w-0 space-y-3 text-sm">
+				{fields.map(({ label, value }) => (
+					<div class="border-b border-divider pb-2 wrap-anywhere">
+						<dt class="font-bold text-primary">{label}</dt>
+						<dd>{value || text.fieldPending}</dd>
+					</div>
+				))}
+			</dl>
+		</div>
+	</Card>
+)}

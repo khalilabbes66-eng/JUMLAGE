@@ -1,0 +1,14 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from './Container.astro';
+
+type Props = HTMLAttributes<'section'> & { as?: 'section' | 'header' };
+
+const { as: Tag = 'section', class: className, ...attributes } = Astro.props;
+---
+
+<Tag {...attributes} class:list={['min-w-0 py-section', className]}>
+	<Container>
+		<slot />
+	</Container>
+</Tag>

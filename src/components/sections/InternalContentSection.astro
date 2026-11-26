@@ -1,0 +1,28 @@
+---
+import Badge from '../ui/Badge.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+	id: string;
+	heading: string;
+	paragraphs?: readonly string[];
+	pending?: { label: string; message: string };
+}
+
+const { id, heading, paragraphs = [], pending } = Astro.props;
+const headingId = `${id}-title`;
+---
+
+<section {id} aria-labelledby={headingId} tabindex="-1" class="min-w-0 scroll-mt-4 border-t border-divider py-block">
+	<SectionHeading {headingId} {heading} />
+	<div class="mt-4 max-w-prose space-y-4 wrap-break-word">
+		{paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+		<slot />
+		{pending && (
+			<div class="border-s-2 border-accent bg-canvas px-4 py-3">
+				<Badge>{pending.label}</Badge>
+				<p class="mt-2 text-sm text-muted">{pending.message}</p>
+			</div>
+		)}
+	</div>
+</section>

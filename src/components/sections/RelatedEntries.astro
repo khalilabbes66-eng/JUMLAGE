@@ -1,0 +1,35 @@
+---
+import { institutionalText, resourceAccess } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { articlePath, publicHref } from '../../lib/institutional';
+import type { Article, Resource } from '../../types/institutional';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; articles: readonly Article[]; resources: readonly Resource[] }
+const { locale, articles, resources } = Astro.props;
+const text = institutionalText[locale];
+---
+
+{(articles.length > 0 || resources.length > 0) && (
+	<div class="mt-4 grid gap-grid sm:grid-cols-2">
+		{articles.length > 0 && (
+			<div class="min-w-0">
+				<p class="editorial-label text-muted">{text.relatedNews}</p>
+				<ul role="list">
+					{articles.map((article) => <li><EditorialLink href={articlePath(article)}>{article.title}</EditorialLink></li>)}
+				</ul>
+			</div>
+		)}
+		{resources.length > 0 && (
+			<div class="min-w-0">
+				<p class="editorial-label text-muted">{text.relatedResources}</p>
+				<ul role="list">
+					{resources.map((resource) => {
+						const href = publicHref(resource.access.href);
+						return href && <li><EditorialLink {href}>{resourceAccess[locale][resource.access.type]} — {resource.title}</EditorialLink></li>;
+					})}
+				</ul>
+			</div>
+		)}
+	</div>
+)}

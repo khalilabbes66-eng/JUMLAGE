@@ -1,0 +1,56 @@
+---
+import { institutions, people, woah } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import { partners, type Locale } from '../../i18n/navigation';
+import InstitutionLinks from '../sections/InstitutionLinks.astro';
+import TeamDirectory from '../sections/TeamDirectory.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const directories = [
+	{ id: 'coordination', heading: text.coordination, people: people.filter((person) => person.assignments.includes('coordination')) },
+	{ id: 'coordinators', heading: text.coordinators, people: people.filter((person) => person.assignments.includes('work-package-coordinator')) },
+];
+const committees = (['restricted', 'extended'] as const).map((id) => ({
+	id, heading: text[id], people: people.filter((person) => person.committees.includes(id)),
+}));
+const contents = [
+	{ id: 'institutions', heading: text.institutions },
+	{ id: 'support', heading: text.support },
+	...directories,
+	{ id: 'team', heading: text.team },
+	...committees,
+];
+---
+
+<InstitutionalPage {locale} title={partners[locale].label} description={text.partnersIntro} {contents}>
+	<EditorialPanel id="institutions" heading={text.institutions}>
+		<InstitutionLinks {locale} />
+	</EditorialPanel>
+	<EditorialPanel id="support" heading={text.support}>
+		<div class="max-w-prose border-s-2 border-accent bg-canvas px-4 py-4">
+			<p>{text.supportText}</p>
+			<EditorialLink href={woah[locale].website}>{woah[locale].name}</EditorialLink>
+		</div>
+	</EditorialPanel>
+	{directories.map(({ id, heading, people: directory }) => (
+		<EditorialPanel {id} {heading}><TeamDirectory {locale} people={directory} /></EditorialPanel>
+	))}
+	<EditorialPanel id="team" heading={text.team}>
+		<div class="space-y-block">
+			{institutions.map((institution) => (
+				<div class="border-s border-divider ps-4">
+					<h3 class="mb-2 text-xl font-extrabold text-primary">{institution.name}</h3>
+					<TeamDirectory {locale} people={people.filter((person) => person.institution === institution.id && person.assignments.includes('twinning-team'))} compactEmpty />
+				</div>
+			))}
+		</div>
+	</EditorialPanel>
+	{committees.map(({ id, heading, people: members }) => (
+		<EditorialPanel {id} {heading}><TeamDirectory {locale} people={members} /></EditorialPanel>
+	))}
+</InstitutionalPage>

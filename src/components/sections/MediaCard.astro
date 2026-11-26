@@ -1,0 +1,23 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import type { Media } from '../../types/institutional';
+import Card from '../ui/Card.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+import PhotoGallery from './PhotoGallery.astro';
+import VideoEmbed from './VideoEmbed.astro';
+
+interface Props { locale: Locale; item: Exclude<Media, { kind: 'press' }>; href?: string }
+const { locale, item, href } = Astro.props;
+const text = institutionalText[locale];
+---
+
+<Card class="h-full">
+	<h3 class="text-xl font-extrabold wrap-anywhere text-primary">{item.title}</h3>
+	{item.summary && item.kind !== 'communication' && <p class="mt-2 text-sm wrap-anywhere text-muted">{item.summary}</p>}
+	<div class="mt-4">
+		{item.kind === 'gallery' && <PhotoGallery {locale} id={'gallery-' + item.id} label={item.title} photos={item.photos} />}
+		{item.kind === 'video' && <VideoEmbed {locale} video={item} />}
+		{item.kind === 'communication' && href && <EditorialLink {href} aria-label={text.visit + ' — ' + item.title}>{text.visit}</EditorialLink>}
+	</div>
+</Card>

@@ -1,0 +1,58 @@
+---
+import { media } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import { communicationAndMedia, type Locale } from '../../i18n/navigation';
+import { articlePath, isPublic, publicArticles, publicHref, publicResources, videoLinks } from '../../lib/institutional';
+import type { Media } from '../../types/institutional';
+import MediaCard from '../sections/MediaCard.astro';
+import PressCard from '../sections/PressCard.astro';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const articles = publicArticles(locale);
+const resources = publicResources();
+
+function sourceLink(item: Extract<Media, { kind: 'press' | 'communication' }>) {
+	const source = item.source;
+	if (source.type === 'external') return publicHref(source.href);
+	if (source.type === 'article') {
+		const article = articles.find(({ id }) => id === source.id);
+		return article && articlePath(article);
+	}
+	return resources.find(({ id }) => id === source.id)?.access.href;
+}
+
+const entries = media
+	.filter((item) => item.language === locale && isPublic(item))
+	.flatMap((item): { item: Media; href?: string }[] => {
+		if (item.kind === 'press' || item.kind === 'communication') {
+			const href = sourceLink(item);
+			return href ? [{ item, href }] : [];
+		}
+		if (item.kind === 'gallery') return item.photos.some((photo) => isPublic(photo) && publicHref(photo.src)) ? [{ item }] : [];
+		return videoLinks(item) ? [{ item }] : [];
+	});
+const sections = (['gallery', 'video', 'press', 'communication'] as const).map((id) => ({ id, heading: text.mediaKinds[id], entries: entries.filter(({ item }) => item.kind === id) }));
+---
+
+<InstitutionalPage {locale} title={communicationAndMedia[locale].label} description={text.mediaIntro} contents={sections}>
+	{sections.map(({ id, heading, entries: items }) => (
+		<EditorialPanel {id} {heading}>
+			{items.length > 0 ? (
+				<ul class="grid gap-grid lg:grid-cols-2" role="list">
+					{items.map(({ item, href }) => (
+						<li class:list={['min-w-0', item.kind === 'gallery' && 'lg:col-span-2']}>
+							{item.kind === 'press'
+								? href && <PressCard {locale} {item} {href} />
+								: <MediaCard {locale} {item} {href} />}
+						</li>
+					))}
+				</ul>
+			) : <EmptyState message={text.mediaEmpty} />}
+		</EditorialPanel>
+	))}
+</InstitutionalPage>

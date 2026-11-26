@@ -1,0 +1,31 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic, publicHref } from '../../lib/institutional';
+import type { ImageAsset } from '../../types/institutional';
+import EditorialImage from '../ui/EditorialImage.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; id: string; label: string; photos: readonly ImageAsset[] }
+const { locale, id, label, photos } = Astro.props;
+const text = institutionalText[locale];
+const approved = photos.filter((photo) => isPublic(photo) && Boolean(publicHref(photo.src)));
+const photoId = (index: number) => id + '-photo-' + (index + 1);
+---
+
+{approved.length > 0 && (
+	<ol aria-label={label} class="grid items-start gap-grid md:grid-cols-2" role="list">
+		{approved.map((photo, index) => (
+			<li id={photoId(index)} tabindex="-1" class="min-w-0 scroll-mt-4 border-b border-divider pb-3">
+				<EditorialImage image={photo} />
+				{approved.length > 1 && (
+					<div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+						<span class="text-sm text-muted">{text.photo} {index + 1} {text.of} {approved.length}</span>
+						{index > 0 && <EditorialLink href={'#' + encodeURIComponent(photoId(index - 1))} aria-label={text.previous + ' · ' + text.photo + ' ' + index}>{text.previous}</EditorialLink>}
+						{index < approved.length - 1 && <EditorialLink href={'#' + encodeURIComponent(photoId(index + 1))} aria-label={text.next + ' · ' + text.photo + ' ' + (index + 2)}>{text.next}</EditorialLink>}
+					</div>
+				)}
+			</li>
+		))}
+	</ol>
+)}

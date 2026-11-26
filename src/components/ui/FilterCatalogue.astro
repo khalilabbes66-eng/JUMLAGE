@@ -1,0 +1,124 @@
+---
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import Button from './Button.astro';
+import EmptyState from './EmptyState.astro';
+
+interface Props {
+	locale: Locale;
+	id: string;
+	fields: readonly { name: string; label: string; options: readonly { value: string; label: string }[] }[];
+	itemCount: number;
+	emptyMessage: string;
+	search?: boolean;
+	pageSize?: number;
+}
+
+const { locale, id, fields, itemCount, emptyMessage, search = false, pageSize = 9 } = Astro.props;
+const text = institutionalText[locale];
+const inputClass = 'tap-target w-full min-w-0 rounded-panel border border-muted bg-surface px-3 py-2 text-sm text-ink';
+---
+
+<div data-catalogue data-page-size={pageSize} data-locale={locale} data-matches={text.matches} data-page-label={text.page} data-of={text.of}>
+	<div data-enhanced hidden>
+		<form class="mb-block border border-divider bg-canvas p-4" aria-controls={id}>
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{search && (
+					<label class="block min-w-0 sm:col-span-2 lg:col-span-4">
+						<span class="mb-1 block text-sm font-bold text-primary">{text.search}</span>
+						<input type="search" name="search" class={inputClass} />
+					</label>
+				)}
+				{fields.map(({ name, label, options }) => (
+					<label class="block min-w-0">
+						<span class="mb-1 block text-sm font-bold text-primary">{label}</span>
+						<select {name} class={inputClass}>
+							<option value="">{text.all}</option>
+							{options.map((option) => <option value={option.value}>{option.label}</option>)}
+						</select>
+					</label>
+				))}
+			</div>
+			<div class="mt-4 flex flex-wrap gap-3">
+				<Button type="submit">{text.filter}</Button>
+				<Button type="reset" variant="secondary">{text.reset}</Button>
+			</div>
+		</form>
+		<p data-status role="status" class="mb-4 text-sm font-bold text-primary"></p>
+	</div>
+	<div {id} tabindex="-1">
+		{itemCount ? <slot /> : <EmptyState message={emptyMessage} />}
+		<div data-no-matches hidden><EmptyState message={text.noMatches} /></div>
+	</div>
+	<div data-pagination hidden class="mt-block">
+		<nav aria-label={text.pagination} class="flex flex-wrap items-center gap-3">
+			<Button data-page-step="-1" variant="secondary">{text.previous}</Button>
+			<span data-page-number class="text-sm font-bold text-primary"></span>
+			<Button data-page-step="1" variant="secondary">{text.next}</Button>
+		</nav>
+	</div>
+</div>
+
+<script>
+	const normalize = (value: string, locale?: string) => value.toLocaleLowerCase(locale).normalize('NFD').replace(/\p{Diacritic}/gu, '').trim();
+
+	for (const catalogue of document.querySelectorAll<HTMLElement>('[data-catalogue]')) {
+		const form = catalogue.querySelector('form');
+		const enhanced = catalogue.querySelector<HTMLElement>('[data-enhanced]');
+		const entries = [...catalogue.querySelectorAll<HTMLElement>('[data-catalogue-entry]')];
+		const status = catalogue.querySelector<HTMLElement>('[data-status]');
+		const empty = catalogue.querySelector<HTMLElement>('[data-no-matches]');
+		const pager = catalogue.querySelector<HTMLElement>('[data-pagination]');
+		const pageNumber = catalogue.querySelector<HTMLElement>('[data-page-number]');
+		const buttons = [...catalogue.querySelectorAll<HTMLButtonElement>('[data-page-step]')];
+		const pageSize = Number(catalogue.dataset.pageSize);
+		const locale = catalogue.dataset.locale;
+		let page = 1;
+
+		if (!form || !enhanced || !status || !empty || !pager || !pageNumber) continue;
+		enhanced.hidden = false;
+
+		const update = (fields: FormData) => {
+			const search = normalize(String(fields.get('search') ?? ''), locale);
+			const selections = [...fields].filter(([key, value]) => key !== 'search' && value !== '');
+			const matches = entries.filter((entry) =>
+				selections.every(([key, value]) => entry.dataset[key] === value)
+				&& (!search || normalize(entry.dataset.search ?? '', locale).includes(search)),
+			);
+			const pages = Math.max(1, Math.ceil(matches.length / pageSize));
+			page = Math.min(pages, Math.max(1, page));
+			const visible = new Set(matches.slice((page - 1) * pageSize, page * pageSize));
+			for (const entry of entries) entry.hidden = !visible.has(entry);
+			empty.hidden = matches.length > 0 || entries.length === 0;
+			pager.hidden = pages < 2;
+			pageNumber.textContent = catalogue.dataset.pageLabel + ' ' + page + ' ' + catalogue.dataset.of + ' ' + pages;
+			status.textContent = catalogue.dataset.matches + ' · ' + matches.length + (pages > 1 ? ' · ' + pageNumber.textContent : '');
+			for (const button of buttons) {
+				const unavailable = button.dataset.pageStep === '-1' ? page === 1 : page === pages;
+				button.setAttribute('aria-disabled', String(unavailable));
+				button.classList.toggle('opacity-60', unavailable);
+			}
+		};
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			page = 1;
+			update(new FormData(form));
+		});
+		form.addEventListener('reset', () => {
+			queueMicrotask(() => {
+				page = 1;
+				update(new FormData(form));
+			});
+		});
+		for (const button of buttons) {
+			button.addEventListener('click', () => {
+				if (button.getAttribute('aria-disabled') === 'true') return;
+				page += Number(button.dataset.pageStep);
+				update(new FormData(form));
+				document.getElementById(form.getAttribute('aria-controls') ?? '')?.focus();
+			});
+		}
+		update(new FormData(form));
+	}
+</script>

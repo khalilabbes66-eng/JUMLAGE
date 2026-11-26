@@ -1,0 +1,50 @@
+---
+import { articleCategories, institutionalText } from '../../i18n/institutional';
+import { localizedPath, newsAndEvents } from '../../i18n/navigation';
+import { alternateLocale, articlePath, formatDate, isPublic, packagePath, publicArticles, publicHref, relatedEntries } from '../../lib/institutional';
+import type { Article } from '../../types/institutional';
+import PhotoGallery from '../sections/PhotoGallery.astro';
+import RelatedEntries from '../sections/RelatedEntries.astro';
+import EditorialImage from '../ui/EditorialImage.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+import EditorialPanel from '../ui/EditorialPanel.astro';
+import InstitutionalPage from './InstitutionalPage.astro';
+
+interface Props { article: Article }
+const { article } = Astro.props;
+const locale = article.language;
+const text = institutionalText[locale];
+const parent = newsAndEvents[locale];
+const translation = publicArticles(alternateLocale(locale)).find((item) => item.translationKey === article.translationKey);
+const paragraphs = (['context', 'participants', 'workCompleted', 'outcomes', 'perspectives'] as const)
+	.flatMap((id) => {
+		const value = article[id];
+		return value?.length ? [{ id, heading: text.articleSections[id], value }] : [];
+	});
+const photos = article.gallery?.filter((photo) => isPublic(photo) && Boolean(publicHref(photo.src))) ?? [];
+const related = relatedEntries(locale, { workPackage: article.workPackage, articleIds: article.relatedArticleIds, resourceIds: article.relatedResourceIds });
+const relatedArticles = related.articles.filter((item) => item.id !== article.id).slice(0, 3);
+---
+
+<InstitutionalPage {locale} title={article.title} description={article.summary} ancestors={[{ label: parent.label, href: localizedPath(locale, parent.slug) }]} alternatePath={translation ? articlePath(translation) : null}>
+	<article class="max-w-4xl space-y-block">
+		<dl class="grid gap-4 border-y border-divider py-4 text-sm wrap-anywhere sm:grid-cols-2 lg:grid-cols-3">
+			<div><dt class="font-bold text-primary">{text.category}</dt><dd>{articleCategories[locale][article.category]}</dd></div>
+			<div><dt class="font-bold text-primary">{text.publicationDate}</dt><dd><time datetime={article.publicationDate}>{formatDate(article.publicationDate, locale)}</time></dd></div>
+			{article.eventDate && <div><dt class="font-bold text-primary">{text.eventDate}</dt><dd><time datetime={article.eventDate}>{formatDate(article.eventDate, locale)}</time></dd></div>}
+			{article.location && <div><dt class="font-bold text-primary">{text.location}</dt><dd>{article.location}</dd></div>}
+			{article.workPackage && <div><dt class="font-bold text-primary">{text.workPackage}</dt><dd><EditorialLink href={packagePath(locale, article.workPackage)}>{article.workPackage.toUpperCase()}</EditorialLink></dd></div>}
+			{article.activity && <div><dt class="font-bold text-primary">{text.activity}</dt><dd>{article.activity}</dd></div>}
+		</dl>
+		<EditorialImage image={article.featuredImage} sizes="(min-width: 64rem) 56rem, 90vw" />
+		{paragraphs.map(({ id, heading, value }) => (
+			<EditorialPanel {id} {heading}>
+				{typeof value === 'string'
+					? <p class="editorial-prose whitespace-pre-line">{value}</p>
+					: <ul class="list-disc space-y-2 ps-5">{value.map((item) => <li>{item}</li>)}</ul>}
+			</EditorialPanel>
+		))}
+		{photos.length > 0 && <EditorialPanel id="article-gallery" heading={text.articleGallery}><PhotoGallery {locale} id="article" label={text.articleGallery} {photos} /></EditorialPanel>}
+		<RelatedEntries {locale} articles={relatedArticles} resources={related.resources} />
+	</article>
+</InstitutionalPage>

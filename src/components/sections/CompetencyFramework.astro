@@ -1,0 +1,51 @@
+---
+import { competencyFramework } from '../../content/institutional';
+import { institutionalText } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { isPublic } from '../../lib/institutional';
+import EmptyState from '../ui/EmptyState.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const framework = competencyFramework[locale];
+---
+
+<dl class="mb-block grid gap-grid sm:grid-cols-3">
+	{[7, 33, 136].map((count, index) => (
+		<div class="min-w-0 border-t-2 border-accent bg-canvas p-4">
+			<dt class="text-sm font-bold wrap-anywhere text-muted">{text.frameworkCounts[index]}</dt>
+			<dd class="mt-1 text-page font-extrabold tabular-nums text-primary">{count}</dd>
+		</div>
+	))}
+</dl>
+{framework && isPublic(framework) && framework.macroCompetencies.length > 0 ? (
+	<ol class="space-y-3" role="list">
+		{framework.macroCompetencies.map((macro) => (
+			<li>
+				<details class="border border-divider px-4">
+					<summary class="tap-target cursor-pointer py-3 font-extrabold wrap-anywhere text-primary">{macro.title}</summary>
+					{macro.description && <p class="mb-3 wrap-anywhere text-muted">{macro.description}</p>}
+					<ol class="space-y-2 pb-4 ps-3" role="list">
+						{macro.subCompetencies.map((sub) => (
+							<li>
+								<details class="border-s-2 border-accent ps-3">
+									<summary class="tap-target cursor-pointer py-3 font-bold wrap-anywhere text-primary">{sub.title}</summary>
+									{sub.description && <p class="mb-3 wrap-anywhere text-muted">{sub.description}</p>}
+									<ul class="list-disc space-y-2 pb-3 ps-5">
+										{sub.capacities.map((capacity) => (
+											<li class="wrap-anywhere">
+												<strong>{capacity.title}</strong>
+												{capacity.description && <p class="text-sm text-muted">{capacity.description}</p>}
+											</li>
+										))}
+									</ul>
+								</details>
+							</li>
+						))}
+					</ol>
+				</details>
+			</li>
+		))}
+	</ol>
+) : <EmptyState label={text.pending} message={text.topicPending} />}

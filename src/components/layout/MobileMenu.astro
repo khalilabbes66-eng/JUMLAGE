@@ -1,0 +1,18 @@
+---
+import { layoutText, type Locale } from '../../i18n/navigation';
+import Navigation from './Navigation.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<details data-nav-disclosure="mobile" class="group py-1">
+	<summary class="tap-target interactive-color editorial-label flex cursor-pointer list-none items-center justify-between gap-3 py-2 pe-1 text-primary hover:bg-canvas active:bg-primary/10 [&::-webkit-details-marker]:hidden">
+		{layoutText[locale].menu}
+		<span aria-hidden="true" class="-mt-1 size-2 rotate-45 border-r-2 border-b-2 group-open:mt-1 group-open:rotate-225"></span>
+	</summary>
+	<Navigation locale={locale} variant="mobile" class="border-t border-divider pb-2" />
+</details>

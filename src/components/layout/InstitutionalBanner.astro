@@ -1,0 +1,36 @@
+---
+import { layoutText, type Locale } from '../../i18n/navigation';
+
+interface Props {
+	locale: Locale;
+}
+
+interface Institution {
+	label: string;
+	logo?: { src: string; width: number; height: number };
+}
+
+const { locale } = Astro.props;
+
+// Approved files go in public/logos. Use their original dimensions here.
+const institutions: Institution[] = [
+	{ label: 'ENMV' },
+	{ label: 'ENVF' },
+	{ label: 'ENVT' },
+	{ label: 'OMSA' },
+];
+---
+
+<ul class="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-1 sm:gap-x-3" aria-label={layoutText[locale].institutions} role="list">
+	{institutions.map(({ label, logo }) => (
+		<li class="border-e border-divider pe-1 last:border-0 sm:pe-3">
+			{logo ? (
+				<img {...logo} alt={label} decoding="async" class="h-auto max-h-10 w-auto max-w-24 object-contain" />
+			) : (
+				<span class="editorial-label inline-flex min-h-8 min-w-10 items-center justify-center text-primary sm:min-w-12">
+					{label}
+				</span>
+			)}
+		</li>
+	))}
+</ul>

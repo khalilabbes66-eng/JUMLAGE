@@ -1,0 +1,28 @@
+---
+import { isPublic, publicHref } from '../../lib/institutional';
+import type { ImageAsset } from '../../types/institutional';
+
+interface Props {
+	image?: ImageAsset;
+	sizes?: string;
+}
+
+const { image, sizes = '(min-width: 64rem) 42vw, 90vw' } = Astro.props;
+const src = image && isPublic(image) ? publicHref(image.src) : undefined;
+const srcset = src && image?.sources?.flatMap((source) => {
+	const url = publicHref(source.src);
+	return url && Number.isInteger(source.width) && source.width > 0 ? [url + ' ' + source.width + 'w'] : [];
+}).join(', ');
+---
+
+{image && src && (
+	<figure class="min-w-0">
+		<img {src} srcset={srcset || undefined} sizes={srcset ? sizes : undefined} width={image.width} height={image.height} alt={image.alt} loading="lazy" decoding="async" class="block h-auto w-full border border-divider" />
+		{(image.caption || image.credit) && (
+			<figcaption class="mt-2 flex flex-wrap gap-x-3 text-xs wrap-anywhere text-muted">
+				{image.caption && <span>{image.caption}</span>}
+				{image.credit && <span>{image.credit}</span>}
+			</figcaption>
+		)}
+	</figure>
+)}

@@ -1,0 +1,33 @@
+---
+import { institutionalText, resourceAccess, resourceCategories, resourceLanguages } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { formatDate, isPublic, publicHref } from '../../lib/institutional';
+import type { Resource } from '../../types/institutional';
+import Badge from '../ui/Badge.astro';
+import Card from '../ui/Card.astro';
+import EditorialLink from '../ui/EditorialLink.astro';
+
+interface Props { locale: Locale; resource: Resource; headingLevel?: 'h2' | 'h3' }
+const { locale, resource, headingLevel: Heading = 'h2' } = Astro.props;
+const text = institutionalText[locale];
+const href = isPublic(resource) ? publicHref(resource.access.href) : undefined;
+const linkText = resourceAccess[locale][resource.access.type];
+---
+
+{href && (
+	<Card class="h-full">
+		<Badge>{resourceCategories[locale][resource.category]}</Badge>
+		<Heading class="mt-3 text-xl font-extrabold wrap-anywhere text-primary">{resource.title}</Heading>
+		<p class="mt-2 text-sm wrap-anywhere text-muted">{resource.summary}</p>
+		<dl class="mt-4 grid gap-3 text-sm wrap-anywhere sm:grid-cols-2">
+			{resource.authors.length > 0 && <div><dt class="font-bold text-primary">{text.authors}</dt><dd>{resource.authors.join(', ')}</dd></div>}
+			{resource.date && <div><dt class="font-bold text-primary">{text.date}</dt><dd><time datetime={resource.date}>{formatDate(resource.date, locale)}</time></dd></div>}
+			{resource.version && <div><dt class="font-bold text-primary">{text.version}</dt><dd>{resource.version}</dd></div>}
+			{resource.workPackage && <div><dt class="font-bold text-primary">{text.workPackage}</dt><dd>{resource.workPackage.toUpperCase()}</dd></div>}
+			<div><dt class="font-bold text-primary">{text.language}</dt><dd>{resourceLanguages[locale][resource.language]}</dd></div>
+		</dl>
+		<EditorialLink {href} class="mt-3" download={resource.access.type === 'download' && href.startsWith('/') ? true : undefined} aria-label={linkText + ' — ' + resource.title}>
+			{linkText} <span aria-hidden="true" class="ms-2">→</span>
+		</EditorialLink>
+	</Card>
+)}

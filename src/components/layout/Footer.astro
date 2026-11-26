@@ -1,0 +1,41 @@
+---
+import { layoutText, type Locale } from '../../i18n/navigation';
+import Container from '../ui/Container.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = layoutText[locale];
+const institutionalLinks = [
+	{ label: 'ENMV', href: 'https://uma.rnu.tn/fr/university-establishments' },
+	{ label: 'ENVF', href: 'https://envf.fr/' },
+	{ label: 'ENVT', href: 'https://envt.fr/' },
+	locale === 'fr'
+		? { label: 'OMSA', href: 'https://www.woah.org/fr/accueil/' }
+		: { label: 'WOAH', href: 'https://www.woah.org/en/home/' },
+];
+---
+
+<footer class="bg-primary text-surface">
+	<Container class="editorial-grid py-block">
+		<p class="min-w-0 max-w-52 text-xl leading-snug font-extrabold text-balance md:col-span-4">{text.siteName}</p>
+		<nav aria-labelledby="institutional-links-heading" class="min-w-0 md:col-span-5">
+			<h2 id="institutional-links-heading" class="editorial-label">{text.institutionalLinks}</h2>
+			<ul class="mt-1 flex flex-wrap gap-x-grid" role="list">
+				{institutionalLinks.map(({ label, href }) => (
+					<li>
+						<a href={href} class="tap-target interactive-color inline-flex items-center text-sm underline underline-offset-4 hover:text-surface/90 hover:decoration-2">
+							{label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+		<div class="border-t border-surface/30 pt-4 md:col-span-3 md:justify-self-end md:border-t-0 md:pt-0">
+			<h2 class="editorial-label">{text.legalNotice}</h2>
+			<p class="mt-2 text-sm text-surface/90">{text.legalPlaceholder}</p>
+		</div>
+	</Container>
+</footer>

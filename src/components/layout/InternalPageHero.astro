@@ -1,0 +1,29 @@
+---
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+	heading: string;
+	description: string;
+	kicker: string;
+}
+
+const { heading, description, kicker } = Astro.props;
+const hasSummary = Astro.slots.has('summary');
+---
+
+<header class="border-b border-divider">
+	<Container>
+		<div class="pt-3"><slot name="breadcrumbs" /></div>
+		<div class="editorial-grid items-end pt-block pb-section">
+			<div class:list={['min-w-0', hasSummary ? 'md:col-span-7 lg:col-span-8' : 'md:col-span-9']}>
+				<p class="editorial-label mb-5 flex items-center gap-3 text-muted">
+					<span aria-hidden="true" class="h-0.5 w-7 shrink-0 bg-accent"></span>
+					{kicker}
+				</p>
+				<SectionHeading as="h1" size="page" {heading} {description} />
+			</div>
+			{hasSummary && <div class="min-w-0 md:col-span-5 lg:col-span-4"><slot name="summary" /></div>}
+		</div>
+	</Container>
+</header>

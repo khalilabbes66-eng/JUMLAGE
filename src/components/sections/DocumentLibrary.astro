@@ -1,0 +1,30 @@
+---
+import { programme } from '../../content/institutional';
+import { institutionalText, resourceCategories, resourceLanguages } from '../../i18n/institutional';
+import type { Locale } from '../../i18n/navigation';
+import { publicResources } from '../../lib/institutional';
+import FilterCatalogue from '../ui/FilterCatalogue.astro';
+import ResourceCard from './ResourceCard.astro';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const text = institutionalText[locale];
+const resources = publicResources().sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+const years = [...new Set(resources.flatMap((item) => item.date ? [item.date.slice(0, 4)] : []))].sort().reverse();
+const fields = [
+	{ name: 'category', label: text.category, options: Object.entries(resourceCategories[locale]).map(([value, label]) => ({ value, label })) },
+	{ name: 'year', label: text.year, options: years.map((value) => ({ value, label: value })) },
+	{ name: 'workpackage', label: text.workPackage, options: programme.map((item) => ({ value: item.id, label: item.code + ' — ' + item.title[locale] })) },
+	{ name: 'language', label: text.language, options: Object.entries(resourceLanguages[locale]).map(([value, label]) => ({ value, label })) },
+];
+---
+
+<FilterCatalogue {locale} id="document-results" {fields} itemCount={resources.length} emptyMessage={text.libraryEmpty} search>
+	<ul class="grid gap-grid md:grid-cols-2" role="list">
+		{resources.map((resource) => (
+			<li data-catalogue-entry data-search={[resource.title, resource.summary, ...resource.authors].join(' ')} data-category={resource.category} data-year={resource.date?.slice(0, 4)} data-workpackage={resource.workPackage} data-language={resource.language} class="min-w-0">
+				<ResourceCard {locale} {resource} />
+			</li>
+		))}
+	</ul>
+</FilterCatalogue>

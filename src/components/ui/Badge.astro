@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+const variants = {
+	primary: 'border-divider text-primary',
+	accent: 'border-accent text-accent',
+};
+
+type Props = HTMLAttributes<'span'> & {
+	variant?: keyof typeof variants;
+};
+
+const { variant = 'primary', class: className, ...attributes } = Astro.props;
+---
+
+<span {...attributes} class:list={['editorial-label inline-flex max-w-full rounded-panel border bg-surface px-2.5 py-1 wrap-anywhere', variants[variant], className]}>
+	<slot />
+</span>
